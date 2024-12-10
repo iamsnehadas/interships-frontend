@@ -1,37 +1,49 @@
-import { useState } from 'react';
-import { login } from '@/services/auth';
+import React, { useState } from 'react';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 
-export default function Login() {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
-      await login(email, password);
-      window.location.href = '/';
-    } catch (err) {
-      setError('Invalid credentials');
+      const response = await axios.post('http://localhost:3000/auth/login', { email, password });
+      alert('Login Successful');
+      console.log(response.data);
+    } catch (error) {
+      alert('Invalid Credentials');
+      console.error(error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        placeholder="Email"
+    <Box style={{ padding: '2rem', maxWidth: '400px', margin: 'auto' }}>
+      <Typography variant="h4" style={{ marginBottom: '1rem' }}>
+        Login
+      </Typography>
+      <TextField
+        fullWidth
+        label="Email"
+        variant="outlined"
+        style={{ marginBottom: '1rem' }}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+      <TextField
+        fullWidth
+        label="Password"
+        variant="outlined"
         type="password"
-        placeholder="Password"
+        style={{ marginBottom: '1rem' }}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      {error && <p>{error}</p>}
-      <button type="submit">Login</button>
-    </form>
+      <Button variant="contained" color="primary" fullWidth onClick={handleLogin}>
+        Login
+      </Button>
+    </Box>
   );
-}
+};
+
+export default LoginPage;

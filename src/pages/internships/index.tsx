@@ -1,47 +1,14 @@
-import { useEffect, useState } from 'react';
-import { getAllInternships } from '@/services/internships';
-import { Layout } from '@/components/Layout';
-import { Card, CardContent, Typography, Grid } from '@mui/material';
+import React from 'react';
+import { LatestInternships } from '@/components/LatestInternships';
+import { LatestJobs } from '@/components/LatestJobs';
 
-export default function Internships() {
-  interface Internship {
-    id: number;
-    title: string;
-    description: string;
-    company: string;
-  }
-
-  const [internships, setInternships] = useState<Internship[]>([]);
-
-  useEffect(() => {
-    const fetchInternships = async () => {
-      const data = await getAllInternships();
-      setInternships(data);
-    };
-
-    fetchInternships();
-  }, []);
-
+const HomePage = () => {
   return (
-    <Layout>
-      <Typography variant="h4" gutterBottom>
-        Internship Listings
-      </Typography>
-      <Grid container spacing={3}>
-        {internships.map((internship) => (
-          <Grid item xs={12} sm={6} md={4} key={internship.id}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">{internship.title}</Typography>
-                <Typography>{internship.description}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Company: {internship.company}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Layout>
+    <div style={{ padding: '2rem', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
+      <LatestInternships />
+      <LatestJobs />
+    </div>
   );
-}
+};
+
+export default HomePage;
