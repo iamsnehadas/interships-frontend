@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/auth/login', { email, password });
-      alert('Login Successful');
-      console.log(response.data);
+      const response = await axios.post('http://localhost:3000/auth/login', {
+        email,
+        password,
+      });
+
+      const { accessToken, user } = response.data; // Assuming the backend returns this structure
+
+      // Save the token for authentication (if required later)
+      localStorage.setItem('token', accessToken);
+
+      // Redirect based on role
+      if (user.role === 'student') {
+        router.push('/dashboard/student');
+      } else if (user.role === 'employer') {
+        router.push('/dashboard/employer');
+      } else {
+        alert('Unknown role');
+      }
     } catch (error) {
       alert('Invalid Credentials');
       console.error(error);
