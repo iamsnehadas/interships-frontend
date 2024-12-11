@@ -6,33 +6,49 @@ import { useRouter } from 'next/router';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false); // For disabling button during login
   const router = useRouter();
 
   const handleLogin = async () => {
+    setLoading(true); // Start loading
     try {
       const response = await axios.post('http://localhost:3000/auth/login', {
         email,
         password,
       });
-
-      const { accessToken, user } = response.data; // Assuming the backend returns this structure
-
-      // Save the token for authentication (if required later)
+  
+      // Validate response structure
+      if (!response.data || !response.data.accessToken || !response.data.user) {
+        throw new Error('Unexpected response structure from server');
+      }
+  
+      const { accessToken, user } = response.data;
+  
+      // Store token in localStorage
       localStorage.setItem('token', accessToken);
-
-      // Redirect based on role
+  
+      // Redirect user based on role
       if (user.role === 'student') {
         router.push('/dashboard/student');
       } else if (user.role === 'employer') {
         router.push('/dashboard/employer');
       } else {
-        alert('Unknown role');
+        alert('Unknown user role');
       }
     } catch (error) {
-      alert('Invalid Credentials');
-      console.error(error);
+      if (axios.isAxiosError(error) && error.response) {
+        alert(error.response.data?.message || 'Invalid credentials');
+      } else if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
+      console.error('Login error:', error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
+  
 
   return (
     <Box style={{ padding: '2rem', maxWidth: '400px', margin: 'auto' }}>
@@ -56,8 +72,14 @@ const LoginPage = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button variant="contained" color="primary" fullWidth onClick={handleLogin}>
-        Login
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={handleLogin}
+        disabled={loading} // Disable button while loading
+      >
+        {loading ? 'Logging in...' : 'Login'}
       </Button>
     </Box>
   );
