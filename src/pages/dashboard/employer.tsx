@@ -1,4 +1,4 @@
-// Updated employer.tsx
+// Updated Employer Dashboard (employer.tsx)
 import React, { useState, useEffect } from 'react';
 import { AuthenticatedNavbar } from '../../components/AuthenticatedNavbar';
 import {
@@ -84,7 +84,7 @@ const EmployerDashboard = () => {
   };
 
   const viewApplications = (id: number) => {
-    fetch(`http://localhost:3000/internship/applications/${id}`, {
+    fetch(`http://localhost:3000/application/internship/${id}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
